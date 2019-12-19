@@ -1,0 +1,82 @@
+LibraryController 
+
+public String getRandomString(int length) {
+    String base = "abcdefghijklmnopqrstuvwxyz0123456789";
+    Random random = new Random();
+    StringBuffer sb = new StringBuffer();
+    for (int i = 0; i < length; i++) {
+        int number = random.nextInt(base.length());
+        sb.append(base.charAt(number));
+    }
+    return sb.toString();
+}
+
+//总结f是要存放图片的总目录绝对路径,file.getname是返回这个文件的名称或者文件夹的名称
+
+@CrossOrigin
+@PostMapping("api/covers")
+public String coversUpload(MultipartFile file) throws Exception {
+    String folder = "D:/workspace/img";
+	//imageFolder指向D:/workspace/img"的file
+    File imageFolder = new File(folder);
+	//getOriginalFilename : 获取上传文件的原名   getRandomString生成随机数
+	//创建一个File对象实例通过父文件路径(imageFolder的 )和子文件路径来实现
+	//所以f大概是这样？D:/workspace/img/zir7rr.png
+    File f = new File(imageFolder, getRandomString(6) + file.getOriginalFilename()
+            .substring(file.getOriginalFilename().length() - 4));
+			//file.getOriginalFilename()
+           // .substring(file.getOriginalFilename().length() - 4)就是得到了.png尾部四个字符
+			
+    //返回当前File对象的上级路径名称。 f的文件夹是img咯？ 没有就创造
+	if (!f.getParentFile().exists())
+        f.getParentFile().mkdirs();
+    try {
+	//是springmvc封装的方法，用于图片上传时，把内存中图片写入磁盘
+        file.transferTo(f);                                      zir7rr.png
+        String imgURL = "http://localhost:8443/api/file/" + f.getName();
+        return imgURL;
+    } catch (IOException e) {
+        e.printStackTrace();
+        return "";
+    }
+}
+
+选择一： 把前端项目部署在 web 服务器中，把后端项目部署在应用服务器中
+前端部署
+1执行 npm run build，项目的 dist 文件夹下将出现我们打包好的前端项目内容。
+2把它拷贝进 nginx\html 下  (http://nginx.org/en/download.html(mainline version) )
+3配置服务器的默认端口，打开 nginx\conf\nginx.conf，找到 server 的配置处，
+把 listen 80 改为 listen 8081
+4配置完成后，运行 nginx 根目录下的 nginx.exe 即可，访问 http://localhost:8081/ ，自动跳转到了登录界面，说明部署成功
+注意  nginx 无法直接处理 vue 的 history 模式路由
+后端部署
+1pom.xml，修改 <packaging> 标签里的 war 为 jar ，除此之外，还可以配置版本号、jar 包名称等
+2在项目wj文件夹下执行 mvn install 命令
+3 target 文件夹下就会出现我们的 jar 包
+4在控制台中到 jar 包对应的目录下执行 java -jar wj-1.0.0.jar （注意名称）即可
+
+
+选择二： 把前端项目打包，作为后端项目的静态文件，再把后端项目部署在应用服务器中
+1前端项目 dist 文件夹中的两个文件 static 和 index.html 拷贝到后端项目的 \src\main\resources\static 目录下
+2把后端项目打成 war 包。打包之前，我们需要把内置的 tomcat 排除出去，避免冗余
+3排除的方法有两种，
+第一种是在 spring-boot-starter-web 的依赖里添加一个 <exclusion>。。。
+ <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+    </exclusions>
+第二种是在 dependencies 中添加 tomcat 相关依赖
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-tomcat</artifactId>
+	<scope>provided</scope>  provided 的意思是 tomcat 由外部提供，不用打包
+</dependency>
+4至于如何部署 war 包我就不多说了，记得把 tomcat 的默认端口修改为 8443（根据前端的转发端口设置）即可
+
+
+
+
+
+

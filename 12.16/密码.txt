@@ -1,0 +1,13 @@
+员工之家 753951
+座机ip192 168 12 76
+svn账号  ldj 123456
+阿里邮箱 ludejian@wintec.cn  ABcd1234
+j开头的无线密码 86667889
+github Martinldj  17864180049ldj
+Git Bash   martinldjgit1  1040241487@qq.com
+The key fingerprint is:
+SHA256:iH4DNusuv9Rz8QcxrjiortQux0RzGDLGD/zBjdSRP8g 1040241487@qq.com
+$ git clone   https://github.com/Martinldj/test1                                   https://blog.csdn.net/feng991254/article/details/80506119
+笔记本登陆密码  25975Ldj
+微软密码 17864180049ldj
+mysql密码 123

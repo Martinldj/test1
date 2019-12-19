@@ -1,0 +1,73 @@
+http://localhost:8080/store UserServlet?method=findByName
+package com.evan.wj.interceptor;
+https://blog.csdn.net/yidou120/article/details/90345497！！！！！！！
+import com.evan.wj.pojo.User;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.servlet.HandlerInterceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+public class LoginInterceptor  implements HandlerInterceptor{
+
+    @Override
+    public boolean preHandle (HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
+        HttpSession session = httpServletRequest.getSession();
+		
+        String contextPath=session.getServletContext().getContextPath();   //getServletContext服务器会为每一个工程创建一个对象
+		//getContextPath   输出结果 /store      理解为项目名路径  除去域名跟端口的剩下部分
+        String[] requireAuthPages = new String[]{                    //requireAuthPages存要访问的路由？
+                "index",
+        };
+
+        String uri = httpServletRequest.getRequestURI();     //获取根路径到地址结尾uri      http://localhost:8080/store/UserServlet
+
+        uri = StringUtils.remove(uri, contextPath+"/");      //除去根目录？？   http://localhost:8080/index or、、  反正就是原面貌是可以到这个index界面的
+        String page = uri;                     //  page=http://localhost:8080/login|index等
+ 
+        if(begingWith(page, requireAuthPages)){
+            User user = (User) session.getAttribute("user");
+            if(user==null) {
+                httpServletResponse.sendRedirect("login");  //重定向
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean begingWith(String page, String[] requiredAuthPages) {
+        boolean result = false;
+        for (String requiredAuthPage : requiredAuthPages) {
+            if(StringUtils.startsWith(page, requiredAuthPage)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+}
+
+
+
+
+ 然后再判断自己定义的拦截    LoginInterceptor拦截器    转发包含index字段的   拦截直接访问首页index或者index.html 的    转发去login          
+                           判断 session 中是否存在 user 属性，如果存在就放行，如果不存在就跳转到 login 页面
+
+代码是首先进入拦截器看是否需要拦截然后再       WebConfigurer  配置拦截器   除了/index.html 都过滤 
+
+总结自定义的拦截了index.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+

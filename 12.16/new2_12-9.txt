@@ -1,0 +1,20 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+    user: {
+      username: window.localStorage.getItem('user' || '[]') == null ? '' : JSON.parse(window.localStorage.getItem('user' || '[]')).username
+	  //JSON.parse是获得对象   
+	  //localStorage.setItem 只能存储字符串， 所以 在储存的时候先将对象转换为字符串  localStorage.setItem("localKey", JSON.stringify(this.cartGroup))
+    }
+  },
+  mutations: {
+    login (state, user) {
+      state.user = user
+      window.localStorage.setItem('user', JSON.stringify(user))
+    }
+  }
+})
